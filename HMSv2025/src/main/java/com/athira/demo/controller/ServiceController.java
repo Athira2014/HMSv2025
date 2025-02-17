@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.athira.demo.common.APIResponse;
 import com.athira.demo.entity.Service;
 import com.athira.demo.service.IServicesService;
+import com.athira.demo.util.JwtUtils;
 
 @RestController
 @RequestMapping("api/")
@@ -24,6 +26,9 @@ public class ServiceController {
 
 	@Autowired
 	IServicesService servicesService;
+	
+	@Autowired
+	JwtUtils jwtUtils;
 
 	@GetMapping("roomservices")
 	public List<Service> getAllRoomServices() {
@@ -50,7 +55,15 @@ public class ServiceController {
 
 	// create service requests
 	@PostMapping("roomservices")
-	private ResponseEntity<APIResponse> saveRoomServices(@RequestBody Service service) {
+	private ResponseEntity<APIResponse> saveRoomServices(@RequestBody Service service,
+			@RequestHeader(value = "authorization", defaultValue = "") String auth) {
+
+		ResponseEntity<APIResponse> tokenVerificationResponse = jwtUtils.verifyToken(auth);
+
+		// Return the response if the token is invalid/expired
+		if (tokenVerificationResponse != null) {
+			return tokenVerificationResponse;
+		}
 
 		APIResponse apiResponse = new APIResponse();
 
@@ -68,7 +81,15 @@ public class ServiceController {
 
 	// create service requests
 	@PutMapping("roomservices")
-	private ResponseEntity<APIResponse> updateRoomServices(@RequestBody Service service) {
+	private ResponseEntity<APIResponse> updateRoomServices(@RequestBody Service service,
+			@RequestHeader(value = "authorization", defaultValue = "") String auth) {
+
+		ResponseEntity<APIResponse> tokenVerificationResponse = jwtUtils.verifyToken(auth);
+
+		// Return the response if the token is invalid/expired
+		if (tokenVerificationResponse != null) {
+			return tokenVerificationResponse;
+		}
 
 		APIResponse apiResponse = new APIResponse();
 
@@ -86,7 +107,15 @@ public class ServiceController {
 
 	// Delete service requests
 	@DeleteMapping("roomservices/{id}")
-	private ResponseEntity<APIResponse> deleteRoomServices(@PathVariable Integer id) {
+	private ResponseEntity<APIResponse> deleteRoomServices(@PathVariable Integer id,
+			@RequestHeader(value = "authorization", defaultValue = "") String auth) {
+
+		ResponseEntity<APIResponse> tokenVerificationResponse = jwtUtils.verifyToken(auth);
+
+		// Return the response if the token is invalid/expired
+		if (tokenVerificationResponse != null) {
+			return tokenVerificationResponse;
+		}
 
 		APIResponse apiResponse = new APIResponse();
 

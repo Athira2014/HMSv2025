@@ -1,4 +1,4 @@
-package com.athira.demo.entity;
+ package com.athira.demo.entity;
 
 import java.util.List;
 
@@ -7,9 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,17 +40,26 @@ public class Guest {
 	@Column(name = "Email", nullable = false, length = 100)
 	private String email;
 
+	@ManyToOne
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    private User user;  // User who created the guest record (e.g., hotel staff)
+	
+    @Column(name = "userId", nullable = false)
+    private Integer userId;  
+	
 	@JsonIgnore
 	@OneToMany(mappedBy = "guest")
 	private List<Booking> booking;
 
-	public Guest(Integer guestNo, String gName, long phone, String address, String email, List<Booking> booking) {
+	public Guest(Integer guestNo, String gName, Long phone, String address, String email, Integer userId,
+			List<Booking> booking) {
 		super();
 		this.guestNo = guestNo;
 		this.gName = gName;
 		this.phone = phone;
 		this.address = address;
 		this.email = email;
+		this.userId = userId;
 		this.booking = booking;
 	}
 
@@ -118,6 +130,22 @@ public class Guest {
 
 	public void setGuestNo(Integer guestNo) {
 		this.guestNo = guestNo;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 }

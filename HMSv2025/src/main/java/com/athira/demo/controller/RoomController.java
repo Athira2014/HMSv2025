@@ -10,59 +10,80 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.athira.demo.common.APIResponse;
 import com.athira.demo.entity.Room;
 import com.athira.demo.service.IRoomService;
-
+import com.athira.demo.util.JwtUtils;
 
 @RestController
 @RequestMapping("api/")
 public class RoomController {
-	
+
 	@Autowired
 	IRoomService roomService;
-	
+
+	@Autowired
+	JwtUtils jwtUtils;
+
 	@GetMapping("rooms")
 	public List<Room> getAllRooms() {
 		return roomService.getAllRooms();
 	}
-	
+
 	@GetMapping("rooms/{id}")
-	public ResponseEntity<APIResponse> getRoomById(@PathVariable Integer id) {
+	public ResponseEntity<APIResponse> getRoomById(@PathVariable Integer id,
+			@RequestHeader(value = "authorization", defaultValue = "") String auth) {
+
+		ResponseEntity<APIResponse> tokenVerificationResponse = jwtUtils.verifyToken(auth);
+
+		// Return the response if the token is invalid/expired
+		if (tokenVerificationResponse != null) {
+			return tokenVerificationResponse;
+		}
 		APIResponse apiResponse = new APIResponse();
 
 		try {
 			Optional<Room> room = roomService.getRoomById(id);
 			apiResponse.setStatus(200);
 			apiResponse.setData(room.get());
-			
+
 		} catch (Exception e) {
 			apiResponse.setStatus(500);
 			apiResponse.setError(e.getMessage());
 		}
 		return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
 	}
-	
-	//get room by room number
+
+	// get room by room number
 	@GetMapping("rooms/number/{num}")
-	public ResponseEntity<APIResponse> getRoomByRoomNumber(@PathVariable Integer num) {
+	public ResponseEntity<APIResponse> getRoomByRoomNumber(@PathVariable Integer num,
+			@RequestHeader(value = "authorization", defaultValue = "") String auth) {
+
+		ResponseEntity<APIResponse> tokenVerificationResponse = jwtUtils.verifyToken(auth);
+
+		// Return the response if the token is invalid/expired
+		if (tokenVerificationResponse != null) {
+			return tokenVerificationResponse;
+		}
+
 		APIResponse apiResponse = new APIResponse();
 
 		try {
 			Optional<Room> room = roomService.getRoomByRoomNumber(num);
 			apiResponse.setStatus(200);
 			apiResponse.setData(room.get());
-			
+
 		} catch (Exception e) {
 			apiResponse.setStatus(500);
 			apiResponse.setError(e.getMessage());
 		}
 		return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
 	}
-	
+
 	@GetMapping("rooms/type/{type}")
 	public ResponseEntity<APIResponse> getRoomsByType(@PathVariable String type) {
 		APIResponse apiResponse = new APIResponse();
@@ -71,14 +92,14 @@ public class RoomController {
 			List<Room> rooms = roomService.getRoomsByType(type);
 			apiResponse.setStatus(200);
 			apiResponse.setData(rooms);
-			
+
 		} catch (Exception e) {
 			apiResponse.setStatus(500);
 			apiResponse.setError(e.getMessage());
 		}
 		return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
 	}
-	
+
 	@GetMapping("rooms/availability")
 	public ResponseEntity<APIResponse> getAvailableRooms() {
 		APIResponse apiResponse = new APIResponse();
@@ -87,43 +108,60 @@ public class RoomController {
 			List<Room> rooms = roomService.getAvailableRooms();
 			apiResponse.setStatus(200);
 			apiResponse.setData(rooms);
-			
+
 		} catch (Exception e) {
 			apiResponse.setStatus(500);
 			apiResponse.setError(e.getMessage());
 		}
 		return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
 	}
-	
+
 	@PostMapping("rooms")
-	public ResponseEntity<APIResponse> saveRoom(@RequestBody Room room) {
+	public ResponseEntity<APIResponse> saveRoom(@RequestBody Room room,
+			@RequestHeader(value = "authorization", defaultValue = "") String auth) {
+
+		ResponseEntity<APIResponse> tokenVerificationResponse = jwtUtils.verifyToken(auth);
+
+		// Return the response if the token is invalid/expired
+		if (tokenVerificationResponse != null) {
+			return tokenVerificationResponse;
+		}
+		
 		APIResponse apiResponse = new APIResponse();
 
 		try {
 			Room rooms = roomService.saveRoom(room);
 			apiResponse.setStatus(200);
 			apiResponse.setData(rooms);
-			
+
 		} catch (Exception e) {
 			apiResponse.setStatus(500);
 			apiResponse.setError(e.getMessage());
 		}
 		return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
 	}
-	
+
 	@PutMapping("rooms")
-	public ResponseEntity<APIResponse> updateRoom(@RequestBody Room room) {
+	public ResponseEntity<APIResponse> updateRoom(@RequestBody Room room,
+			@RequestHeader(value = "authorization", defaultValue = "") String auth) {
+
+		ResponseEntity<APIResponse> tokenVerificationResponse = jwtUtils.verifyToken(auth);
+
+		// Return the response if the token is invalid/expired
+		if (tokenVerificationResponse != null) {
+			return tokenVerificationResponse;
+		}
 		APIResponse apiResponse = new APIResponse();
 
 		try {
 			Room rooms = roomService.saveRoom(room);
 			apiResponse.setStatus(200);
 			apiResponse.setData(rooms);
-			
+
 		} catch (Exception e) {
 			apiResponse.setStatus(500);
 			apiResponse.setError(e.getMessage());
 		}
 		return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
-	} 
+	}
 }
